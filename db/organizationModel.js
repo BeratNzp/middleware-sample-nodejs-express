@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose"
+import mongoose from "mongoose"
 
 const organizationSchema = mongoose.Schema({
     title: {
@@ -12,5 +12,4 @@ const organizationSchema = mongoose.Schema({
 })
 
 const Organization = mongoose.model('organization', organizationSchema)
-
 export default Organization

@@ -79,4 +79,5 @@ router.delete('/:id', async (req, res) => {
 })
 /* .Delete an organization. */
 
-export default router
+const organizationRouter = router
+export default organizationRouter
