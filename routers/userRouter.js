@@ -77,7 +77,7 @@ router.post('/signin', async (req, res) => {
     }
 })
 
-router.get('/logout/:id', async (req, res) => {
+router.get('/signout/:id', async (req, res) => {
     try {
         const { id } = req.params
         await tokenModel.findOneAndUpdate(
@@ -87,19 +87,24 @@ router.get('/logout/:id', async (req, res) => {
             { refreshToken: null },
             { new: true }
         )
-        res.status(200).json({"Message": "Logout succesfully."})
+        return res.status(200).json({"Message": "Logout succesfully." + tokenModel})
     } catch (error) {
         res.status(500).json({"Message": error.message + " | Code: 2002"})
     }
 })
 
-router.get('/getToken/:id', async (req, res) => {
+router.get('/refresh/:id', async (req, res) => {
     try {
         const { id } = req.params
         const { refreshToken } = await tokenModel.findOne({ user_id: id })
         if(!refreshToken) return res.sendStatus(401)
 
-        res.status(200).json({ refreshToken })
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, decodedRefreshToken) => {
+            if (err) return res.status(403).json(err)
+
+            const accessToken = jwt.sign({ email: decodedRefreshToken.email, id: decodedRefreshToken.id }, process.env.ACCESS_TOKEN, { expiresIn: '3m' })
+            res.status(200).json(accessToken)
+        })
     } catch (error) {
         res.status(500).json({"Message": error.message + " | Code: 2003"})
     }

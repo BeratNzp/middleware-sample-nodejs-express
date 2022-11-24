@@ -1,12 +1,14 @@
 import express from "express"
 import mongoose from "mongoose"
 
+import auth from "../middleware/auth.js"
+
 import Organization from "../db/organizationModel.js"
 
 const router = express.Router()
 
 /* Get all organizations. */
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const organizations = await Organization.find()
         res.status(200).json(organizations)
@@ -35,10 +37,10 @@ router.get('/:id', async (req, res) => {
 /* .Get a specific organization. */
 
 /* Create an organization. */
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
         const organization = req.body
-        const createdOrganization = await Organization.create(organization)
+        const createdOrganization = await Organization.create({ ...organization, creator_id: req.creatorId })
         res.status(201).json(createdOrganization)
     } catch (error) {
         res.status(404).json({"Message": error.message + " | Organization could not create. Code: 1003"})
@@ -47,7 +49,7 @@ router.post('/', async (req, res) => {
 /* .Create an organization. */
 
 /* Update specific organization. */
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     try {
         const { id } = req.params
 
@@ -64,7 +66,7 @@ router.put('/:id', async (req, res) => {
 /* .Update specific organization. */
 
 /* Delete an organization. */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const { id } = req.params
 

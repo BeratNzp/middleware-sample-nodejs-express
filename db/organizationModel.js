@@ -8,6 +8,10 @@ const organizationSchema = mongoose.Schema({
     created_at: {
         type: Date,
         default: new Date()
+    },
+    creator_id: {
+        type: String,
+        required: true
     }
 })
 
